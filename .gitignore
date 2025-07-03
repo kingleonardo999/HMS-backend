@@ -1,0 +1,7 @@
+.idea/
+
+tmp/
+
+uploads/
+
+config/config.yml
