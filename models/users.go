@@ -1,9 +1,7 @@
 package models
 
-import "gorm.io/gorm"
-
 type User struct {
-	gorm.Model
+	ID       uint   `json:"id" gorm:"primary_key"`
 	LoginId  string `json:"loginId" gorm:"unique;not null"`  // 登录ID，唯一
 	Password string `json:"loginPwd" gorm:"not null"`        // 密码，不能为空
 	Name     string `json:"name" gorm:"not null"`            // 姓名，不能为空

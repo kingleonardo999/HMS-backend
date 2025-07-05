@@ -17,12 +17,6 @@ type AppConfig struct {
 		Password string
 		DBName   string
 	}
-	ImgConfig struct {
-		EnableImgUpload bool
-	}
-	DeleteConfig struct {
-		EnableDelete bool
-	}
 }
 
 var Config *AppConfig

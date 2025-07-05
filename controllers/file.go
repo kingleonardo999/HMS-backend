@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"hotel-management-system/global"
 	"hotel-management-system/models"
-	"hotel-management-system/utils"
 	"net/http"
 	"strconv"
 	"time"
@@ -49,11 +48,6 @@ func UploadImg(c *gin.Context) {
 	if err := global.Db.Create(&img).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "保存图片信息失败"})
 		return
-	}
-
-	// 将图片对象加入上传队列
-	if utils.ImgUploadChan != nil {
-		utils.ImgUploadChan <- &img
 	}
 
 	c.JSON(http.StatusOK, gin.H{

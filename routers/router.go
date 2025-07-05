@@ -13,7 +13,7 @@ func SetupRouters() *gin.Engine {
 	// 设置跨域
 	r.Use(cors.New(cors.Config{
 		AllowOriginFunc: func(origin string) bool {
-			return true
+			return true // 允许所有域
 		},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}, // 允许的HTTP方法
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"}, // 允许的请求头

@@ -6,6 +6,7 @@ import (
 	"hotel-management-system/models"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func AddRole(c *gin.Context) {
@@ -16,14 +17,12 @@ func AddRole(c *gin.Context) {
 		return
 	}
 
-	// 检查角色名是否已存在
-	var existingRole models.Role
-	if err := global.Db.Where("role_name = ?", role.RoleName).First(&existingRole).Error; err == nil {
-		c.JSON(http.StatusConflict, gin.H{"success": false, "message": "角色名已存在"})
-		return
-	}
 	// 保存角色到数据库
 	if err := global.Db.Create(&role).Error; err != nil {
+		if strings.Contains(err.Error(), "Duplicate entry") && strings.Contains(err.Error(), "uni_roles_role_name") {
+			c.JSON(http.StatusConflict, gin.H{"success": false, "message": "角色名已存在"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "服务器错误"})
 		return
 	}
@@ -70,15 +69,15 @@ func UpdateRole(c *gin.Context) {
 		return
 	}
 
-	// 检查角色是否存在
-	var existingRole models.Role
-	if err := global.Db.First(&existingRole, role.ID).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"success": false, "message": "角色不存在"})
-		return
-	}
-
 	// 更新角色信息
 	if err := global.Db.Save(&role).Error; err != nil {
+		if strings.Contains(err.Error(), "Duplicate entry") && strings.Contains(err.Error(), "uni_roles_role_name") {
+			c.JSON(http.StatusConflict, gin.H{"success": false, "message": "角色名已存在"})
+			return
+		} else if err.Error() == "record not found" {
+			c.JSON(http.StatusNotFound, gin.H{"success": false, "message": "角色不存在"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "服务器错误"})
 		return
 	}

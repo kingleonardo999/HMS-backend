@@ -4,9 +4,6 @@ import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
-	"log"
-	"os"
-	"sync"
 	"time"
 )
 
@@ -24,7 +21,7 @@ func HashPassword(password string) (string, error) {
 func GenerateJWT(username string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": username,
-		"exp":      time.Now().Add(time.Hour * 72).Unix(),
+		"exp":      time.Now().Add(time.Minute * 5).Unix(),
 	})
 	signedToken, err := token.SignedString([]byte("secret"))
 	if err != nil {
@@ -64,31 +61,4 @@ func ParseJWT(tokenString string) (string, error) {
 	} else {
 		return "", errors.New("invalid token")
 	}
-}
-
-var deleteLock sync.Mutex
-
-func DeleteTempImages() error {
-	deleteLock.Lock()
-	defer deleteLock.Unlock()
-	files, err := os.ReadDir("./uploads")
-	if err != nil {
-		log.Println("Error reading uploads directory:", err)
-		return err
-	}
-	for _, file := range files {
-		if !file.IsDir() {
-			fullPath := "./uploads/" + file.Name()
-			// 检查文件是否存在再删除，避免重复删除报错
-			if _, err := os.Stat(fullPath); err == nil {
-				err := os.Remove(fullPath)
-				if err != nil {
-					log.Println("Error deleting temporary image:", err)
-				} else {
-					log.Println("Deleted temporary image:", file.Name())
-				}
-			}
-		}
-	}
-	return nil
 }
