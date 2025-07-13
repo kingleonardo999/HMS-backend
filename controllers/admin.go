@@ -1,12 +1,15 @@
 package controllers
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"hotel-management-system/global"
 	"hotel-management-system/models"
 	"hotel-management-system/utils"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 var (
@@ -35,7 +38,7 @@ func AdminRegister(c *gin.Context) {
 	// 保存用户信息到数据库
 	err = global.Db.Create(&registerInfo).Error
 	if err != nil {
-		if err.Error() == "UNIQUE constraint failed: users.login_id" {
+		if strings.Contains(err.Error(), "Duplicate entry") && strings.Contains(err.Error(), "uni") {
 			c.JSON(http.StatusConflict, gin.H{"success": false, "message": "用户已存在"})
 			return
 		}
@@ -60,7 +63,7 @@ func AdminLogin(c *gin.Context) {
 	// 从数据库查找用户信息
 	var user models.User
 	if err := global.Db.Where("login_id = ?", loginInfo.LoginId).First(&user).Error; err != nil {
-		if err.Error() == "record not found" {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusUnauthorized, gin.H{"success": false, "message": "用户不存在"})
 			return
 		}
@@ -184,7 +187,7 @@ func AddAdmin(c *gin.Context) {
 	// 保存信息到数据库
 	err = global.Db.Create(&newAdmin).Error
 	if err != nil {
-		if err.Error() == "UNIQUE constraint failed: users.login_id" {
+		if strings.Contains(err.Error(), "Duplicate entry") && strings.Contains(err.Error(), "uni") {
 			c.JSON(http.StatusConflict, gin.H{"success": false, "message": "用户已存在"})
 			return
 		}
@@ -214,7 +217,7 @@ func DeleteAdmin(c *gin.Context) {
 	// 删除用户
 	err := global.Db.Where("login_id = ?", req.LoginId).Delete(&models.User{}).Error
 	if err != nil {
-		if err.Error() == "record not found" {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"success": false, "message": "用户不存在"})
 			return
 		}
@@ -294,7 +297,7 @@ func ResetAdminPwd(c *gin.Context) {
 	}
 	var user models.User
 	if err := global.Db.Where("login_id = ?", req.LoginId).First(&user).Error; err != nil {
-		if err.Error() == "record not found" {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"success": false, "message": "用户不存在"})
 			return
 		}

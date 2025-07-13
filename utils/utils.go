@@ -21,7 +21,7 @@ func HashPassword(password string) (string, error) {
 func GenerateJWT(username string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": username,
-		"exp":      time.Now().Add(time.Minute * 5).Unix(),
+		"exp":      time.Now().Add(time.Hour * 72).Unix(),
 	})
 	signedToken, err := token.SignedString([]byte("secret"))
 	if err != nil {

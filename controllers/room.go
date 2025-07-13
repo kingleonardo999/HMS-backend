@@ -1,11 +1,14 @@
 package controllers
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"hotel-management-system/global"
 	"hotel-management-system/models"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type RoomInfo struct {
@@ -60,7 +63,7 @@ func AddRoom(c *gin.Context) {
 		return
 	}
 	if err := global.Db.Create(&newRoom).Error; err != nil {
-		if err.Error() == "UNIQUE constraint failed: rooms.room_id" {
+		if strings.Contains(err.Error(), "Duplicate entry") && strings.Contains(err.Error(), "uni") {
 			c.JSON(http.StatusConflict, gin.H{"success": false, "message": "房间已存在"})
 			return
 		}
@@ -82,7 +85,7 @@ func DeleteRoom(c *gin.Context) {
 		return
 	}
 	if err := global.Db.Where("room_id = ?", req.RoomId).Delete(&models.Room{}).Error; err != nil {
-		if err.Error() == "record not found" {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"success": false, "message": "房间不存在"})
 			return
 		}
@@ -103,7 +106,7 @@ func UpdateRoom(c *gin.Context) {
 	}
 	var oldRoom models.Room
 	if err := global.Db.Where("room_id = ?", newRoom.RoomId).First(&oldRoom).Error; err != nil {
-		if err.Error() == "record not found" {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"success": false, "message": "房间不存在"})
 			return
 		}
@@ -111,7 +114,7 @@ func UpdateRoom(c *gin.Context) {
 		return
 	}
 	if err := global.Db.Model(&oldRoom).Updates(&newRoom).Error; err != nil {
-		if err.Error() == "record not found" {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"success": false, "message": "房间不存在"})
 			return
 		}
@@ -134,7 +137,7 @@ func GetRoomDetail(c *gin.Context) {
 		Where("rooms.room_id = ?", roomId).
 		Scan(&roomInfo).Error
 	if err != nil {
-		if err.Error() == "record not found" {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"success": false, "message": "房间不存在"})
 			return
 		}

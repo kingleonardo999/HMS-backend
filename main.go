@@ -16,6 +16,7 @@ import (
 func main() {
 	// 初始化配置
 	config.InitConfig()
+	//global.Db.AutoMigrate(&models.Reside{}, &models.Guest{}, &models.ResideState{})
 	//global.Db.AutoMigrate(&models.Img{}, &models.User{}, &models.Role{}, &models.RoomType{}, &models.Room{})
 	r := routers.SetupRouters()
 	port := config.Config.App.Port // 获取配置文件中的端口号

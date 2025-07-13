@@ -74,5 +74,18 @@ func SetupRouters() *gin.Engine {
 		roomGroup.GET("/detail", controllers.GetRoomDetail)         // 获取房间详情
 		roomGroup.GET("/statusList", controllers.GetRoomStatusList) // 获取房间状态列表
 	}
+	// 客户相关路由
+	guestGroup := r.Group("/guestRecord")
+	guestGroup.Use(middlewares.AuthMiddleware()) // 使用认证中间件
+	{
+		guestGroup.GET("/list", controllers.GetGuestList)             // 获取入住信息列表
+		guestGroup.POST("/add", controllers.AddGuest)                 // 添加入住信息
+		guestGroup.POST("/delete", controllers.DeleteGuest)           // 删除入住信息
+		guestGroup.POST("/update", controllers.UpdateGuest)           // 更新入住信息
+		guestGroup.GET("/detail", controllers.GetGuestDetail)         // 获取入住信息
+		guestGroup.GET("/roomList", controllers.GetGuestRoomList)     // 获取房间列表
+		guestGroup.GET("/statusList", controllers.GetGuestStatusList) // 获取入住状态列表
+		guestGroup.POST("/checkout", controllers.CheckoutGuest)       // 结账
+	}
 	return r
 }

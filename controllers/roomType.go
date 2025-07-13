@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"hotel-management-system/global"
 	"hotel-management-system/models"
 	"net/http"
@@ -73,7 +75,7 @@ func UpdateRoomType(c *gin.Context) {
 		return
 	}
 	if err := global.Db.Save(&newRoomType).Error; err != nil {
-		if err.Error() == "record not found" {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"success": false, "message": "房间类型不存在"})
 			return
 		}

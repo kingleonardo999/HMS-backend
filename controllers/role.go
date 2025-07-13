@@ -19,7 +19,7 @@ func AddRole(c *gin.Context) {
 
 	// 保存角色到数据库
 	if err := global.Db.Create(&role).Error; err != nil {
-		if strings.Contains(err.Error(), "Duplicate entry") && strings.Contains(err.Error(), "uni_roles_role_name") {
+		if strings.Contains(err.Error(), "Duplicate entry") && strings.Contains(err.Error(), "uni") {
 			c.JSON(http.StatusConflict, gin.H{"success": false, "message": "角色名已存在"})
 			return
 		}
@@ -71,7 +71,7 @@ func UpdateRole(c *gin.Context) {
 
 	// 更新角色信息
 	if err := global.Db.Save(&role).Error; err != nil {
-		if strings.Contains(err.Error(), "Duplicate entry") && strings.Contains(err.Error(), "uni_roles_role_name") {
+		if strings.Contains(err.Error(), "Duplicate entry") && strings.Contains(err.Error(), "uni") {
 			c.JSON(http.StatusConflict, gin.H{"success": false, "message": "角色名已存在"})
 			return
 		} else if err.Error() == "record not found" {
