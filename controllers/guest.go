@@ -7,7 +7,6 @@ import (
 	"gorm.io/gorm/clause"
 	"hotel-management-system/global"
 	"hotel-management-system/models"
-	"log"
 	"math"
 	"net/http"
 	"strconv"
@@ -17,6 +16,7 @@ import (
 const (
 	roomFree     = 1
 	roomOccupied = 2
+	roomOrdered  = 5
 	resideState  = "未结账"
 )
 
@@ -103,7 +103,7 @@ func AddGuest(c *gin.Context) {
 			return
 		}
 	} else {
-		if guest.Name != reside.Name || guest.Phone != reside.Phone {
+		if guest.Name != reside.Name {
 			c.JSON(http.StatusConflict, gin.H{"success": false, "message": "客户信息不匹配"})
 			return
 		}
@@ -241,7 +241,7 @@ func UpdateGuest(c *gin.Context) {
 
 func DeleteGuest(c *gin.Context) {
 	var req struct {
-		Id string `json:"id" binding:"required"`
+		Id uint `json:"id" binding:"required"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "输入无效"})
@@ -249,7 +249,7 @@ func DeleteGuest(c *gin.Context) {
 	}
 	// 查询状态是否为已结账
 	var state string
-	if err := global.Db.Select("reside_state").Where("id = ?", req.Id).First(&state).Error; err != nil {
+	if err := global.Db.Model(&models.Reside{}).Select("reside_state").Where("id = ?", req.Id).First(&state).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"success": false, "message": "入住记录不存在"})
 			return
@@ -378,9 +378,7 @@ func CheckoutGuest(c *gin.Context) {
 		return
 	}
 	days := int32(math.Ceil(end.Sub(start).Hours() / 24))
-	log.Println(days)
 	totalMoney := days * reside.Room.RoomType.RoomTypePrice
-	log.Println(totalMoney)
 	if totalMoney != req.TotalMoney {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "入住记录金额不匹配"})
 		return
@@ -394,6 +392,18 @@ func CheckoutGuest(c *gin.Context) {
 	if err := tx.Where("room_id = ?", reside.Room.RoomId).Updates(&models.Room{RoomStatusId: roomFree}).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "更新房间状态失败"})
+		return
+	}
+	var billing models.Billing
+	billing.ResideId = reside.ID
+	billing.Time = time.Now().Format("2006-01-02 15:04:05")
+	billing.Amount = totalMoney
+	billing.GuestId = reside.GuestId
+	billing.RoomId = reside.Room.RoomId
+	billing.RoomTypeName = reside.Room.RoomType.RoomTypeName
+	if err := tx.Create(&billing).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "创建账单失败"})
 		return
 	}
 	tx.Commit()

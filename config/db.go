@@ -22,7 +22,9 @@ func initDB() {
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		DB.Username, DB.Password, DB.Host, DB.Port, DB.DBName)
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		DisableForeignKeyConstraintWhenMigrating: true, // 禁用外键约束, 使用逻辑外键
+	})
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}

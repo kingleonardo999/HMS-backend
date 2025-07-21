@@ -104,6 +104,10 @@ func UpdateRoom(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "输入无效"})
 		return
 	}
+	if newRoom.RoomStatusId == roomOccupied || newRoom.RoomStatusId == roomOrdered {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "房间状态不可更改"})
+		return
+	}
 	var oldRoom models.Room
 	if err := global.Db.Where("room_id = ?", newRoom.RoomId).First(&oldRoom).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

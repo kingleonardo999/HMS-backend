@@ -57,11 +57,12 @@ func SetupRouters() *gin.Engine {
 	roomTypeGroup := r.Group("/roomType")
 	roomTypeGroup.Use(middlewares.AuthMiddleware()) // 使用认证中间件
 	{
-		roomTypeGroup.GET("/list", controllers.GetRoomTypeList)     // 获取房型列表
-		roomTypeGroup.POST("/add", controllers.AddRoomType)         // 添加房型
-		roomTypeGroup.POST("/delete", controllers.DeleteRoomType)   // 删除房型
-		roomTypeGroup.POST("/update", controllers.UpdateRoomType)   // 更新房型信息
-		roomTypeGroup.GET("/detail", controllers.GetRoomTypeDetail) // 获取房型详情
+		roomTypeGroup.GET("/list", controllers.GetRoomTypeList)             // 获取房型列表
+		roomTypeGroup.POST("/add", controllers.AddRoomType)                 // 添加房型
+		roomTypeGroup.POST("/delete", controllers.DeleteRoomType)           // 删除房型
+		roomTypeGroup.POST("/update", controllers.UpdateRoomType)           // 更新房型信息
+		roomTypeGroup.GET("/detail", controllers.GetRoomTypeDetail)         // 获取房型详情
+		roomTypeGroup.GET("/totalTypePrice", controllers.GetTotalTypePrice) // 获取房型总价
 	}
 	// 房间相关路由
 	roomGroup := r.Group("/room")
@@ -86,6 +87,22 @@ func SetupRouters() *gin.Engine {
 		guestGroup.GET("/roomList", controllers.GetGuestRoomList)     // 获取房间列表
 		guestGroup.GET("/statusList", controllers.GetGuestStatusList) // 获取入住状态列表
 		guestGroup.POST("/checkout", controllers.CheckoutGuest)       // 结账
+	}
+	// 订单相关路由
+	orderGroup := r.Group("/order")
+	orderGroup.Use(middlewares.AuthMiddleware()) // 使用认证中间件
+	{
+		orderGroup.GET("/list", controllers.GetOrderList)     // 获取订单列表
+		orderGroup.POST("/add", controllers.AddOrder)         // 添加订单
+		orderGroup.POST("/live", controllers.Order2Reside)    // 入住
+		orderGroup.POST("/update", controllers.UpdateOrder)   // 更新订单信息
+		orderGroup.GET("/detail", controllers.GetOrderDetail) // 获取订单详情
+	}
+	billingGroup := r.Group("/billing")
+	billingGroup.Use(middlewares.AuthMiddleware()) // 使用认证中间件
+	{
+		billingGroup.GET("/list", controllers.GetBillingList) // 获取账单列表
+		billingGroup.GET("/top3", controllers.GetTop3)
 	}
 	return r
 }

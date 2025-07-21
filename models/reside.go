@@ -9,9 +9,9 @@ type Reside struct {
 	ResideDate  string `json:"resideDate" gorm:"not null"`
 	LeaveDate   string `json:"leaveDate"`
 	TotalMoney  int32  `json:"totalMoney" gorm:"not null"`
-	ResideState string `json:"resideState" gorm:"not null"`
 	Deposit     int32  `json:"deposit" gorm:"not null"`
 	GuestNum    int32  `json:"guestNum" gorm:"not null"`
+	ResideState string `json:"resideState" gorm:"not null"`
 }
 
 type ResideState struct {
