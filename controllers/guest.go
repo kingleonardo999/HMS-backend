@@ -74,14 +74,14 @@ func GetGuestList(c *gin.Context) {
 
 func AddGuest(c *gin.Context) {
 	var reside struct {
-		IdentityId string `json:"identityId"`
-		Name       string `json:"guestName"`
-		Phone      string `json:"guestPhone"`
-		RoomTypeId uint   `json:"roomTypeId"`
-		RoomId     string `json:"roomId"`
-		ResideDate string `json:"resideDate"`
-		Deposit    int    `json:"deposit"`
-		GuestNum   int    `json:"guestNum"`
+		IdentityId string `json:"identityId" binding:"required"`
+		Name       string `json:"guestName" binding:"required"`
+		Phone      string `json:"guestPhone" binding:"required"`
+		RoomTypeId uint   `json:"roomTypeId" binding:"required"`
+		RoomId     string `json:"roomId" binding:"required"`
+		ResideDate string `json:"resideDate" binding:"required"`
+		Deposit    int    `json:"deposit" binding:"required"`
+		GuestNum   int    `json:"guestNum" binding:"required"`
 	}
 	if err := c.ShouldBindJSON(&reside); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "输入无效"})
@@ -163,7 +163,7 @@ func UpdateGuest(c *gin.Context) {
 		RoomTypeId uint   `json:"roomTypeId" binding:"required"`
 		RoomId     string `json:"roomId" binding:"required"`
 		LeaveDate  string `json:"leaveDate"`
-		GuestNum   int    `json:"guestNum"`
+		GuestNum   int    `json:"guestNum" binding:"required"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "输入无效"})

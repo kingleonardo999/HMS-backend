@@ -17,47 +17,10 @@
 ### 开发工具
 - GoLand IDE
 
-## 项目结构
-```
-hotel-management-system/
-├── config/              # 配置文件和配置相关代码
-│   ├── config.go        # 配置加载逻辑
-│   ├── config.yml       # 配置文件
-│   └── db.go            # 数据库连接配置
-├── controllers/         # 控制器，处理HTTP请求
-│   ├── admin.go         # 管理员相关控制器
-│   ├── file.go          # 文件上传控制器
-│   ├── guest.go         # 客人管理控制器
-│   ├── role.go          # 角色管理控制器
-│   ├── room.go          # 房间管理控制器
-│   └── roomType.go      # 房间类型控制器
-├── global/              # 全局变量和常量
-│   └── global.go        # 全局变量定义
-├── middlewares/         # 中间件
-│   └── auth.go          # 认证中间件
-├── models/              # 数据模型
-│   ├── guest.go         # 客人模型
-│   ├── img.go           # 图片模型
-│   ├── reside.go        # 入住记录模型
-│   ├── roles.go         # 角色模型
-│   ├── rooms.go         # 房间模型
-│   ├── roomTypes.go     # 房间类型模型
-│   └── users.go         # 用户模型
-├── routers/             # 路由配置
-│   └── router.go        # 路由注册
-├── utils/               # 工具函数
-│   └── utils.go         # 通用工具函数
-├── uploads/             # 上传文件存储目录
-├── go.mod               # Go模块依赖
-├── go.sum               # Go模块校验和
-└── main.go              # 程序入口
-```
-
 ## 功能特性
 
 ### 用户管理
 - 用户注册与登录
-- 基于角色的权限控制
 - JWT认证
 
 ### 房间管理
@@ -122,29 +85,11 @@ go build
 ### API访问
 服务启动后，API接口将在配置的端口上可用（默认8080）：
 - http://localhost:8080/admin/login - 管理员登录
-- http://localhost:8080/admin/register - 管理员注册
 - 其他API端点...
 
 ## API文档
 
-### 认证类API
-- `POST /admin/register` - 管理员注册
-- `POST /admin/login` - 管理员登录
-
-### 房间管理API
-- `GET /rooms` - 获取房间列表
-- `GET /rooms/:id` - 获取特定房间详情
-- `POST /rooms` - 创建新房间
-- `PUT /rooms/:id` - 更新房间信息
-- `DELETE /rooms/:id` - 删除房间
-
-### 客人管理API
-- `GET /guests` - 获取客人列表
-- `GET /guests/:id` - 获取特定客人详情
-- `POST /guests` - 添加新客人
-- `PUT /guests/:id` - 更新客人信息
-
-### 更多API端点详见控制器和路由文件
+[API文档](docs/API.md)
 
 ## 贡献指南
 欢迎提交问题报告和功能请求。如果您想贡献代码，请遵循以下步骤：
@@ -153,6 +98,12 @@ go build
 3. 提交更改 (`git commit -m 'Add some feature'`)
 4. 推送到分支 (`git push origin feature/your-feature`)
 5. 创建Pull Request
+
+## TODO
+1. 基于角色的权限管理
+2. 根据房间类型动态分配客房
+3. 房间状态追踪
+4. 房间预定可选项更多（多个物理相近的客房）
 
 ## 许可证
 [MIT](./LICENSE)

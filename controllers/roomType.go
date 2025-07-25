@@ -95,25 +95,3 @@ func GetRoomTypeDetail(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": roomType})
 }
-
-func GetTotalTypePrice(c *gin.Context) {
-	type Result struct {
-		RoomTypeId    uint   `json:"roomTypeId"`
-		RoomTypeName  string `json:"roomTypeName"`
-		RoomTypePrice int32  `json:"roomTypePrice"`
-		TotalMoney    int64  `json:"totalMoney"`
-		Count         int64  `json:"count"`
-	}
-	var results []Result
-	err := global.Db.Table("room_types").
-		Select("room_types.id as room_type_id, room_types.room_type_name, room_types.room_type_price, COUNT(rooms.room_type_id) as count, COALESCE(COUNT(rooms.room_type_id) * room_types.room_type_price, 0) as total_money").
-		Where("rooms.room_status_id = ?", roomOccupied).
-		Joins("LEFT JOIN rooms ON rooms.room_type_id = room_types.id").
-		Group("room_types.id, room_types.room_type_name, room_types.room_type_price").
-		Scan(&results).Error
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "服务器错误"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"success": true, "data": results})
-}

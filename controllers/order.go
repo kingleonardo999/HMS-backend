@@ -90,15 +90,15 @@ func GetOrderDetail(c *gin.Context) {
 
 func AddOrder(c *gin.Context) {
 	var order struct {
-		IdentityId string `json:"identityId"`
-		Name       string `json:"guestName"`
-		Phone      string `json:"guestPhone"`
-		RoomTypeId uint   `json:"roomTypeId"`
-		RoomId     string `json:"roomId"`
-		ResideDate string `json:"resideDate"`
-		LeaveDate  string `json:"leaveDate"`
-		GuestNum   int    `json:"guestNum"`
-		TotalMoney int    `json:"totalMoney"`
+		IdentityId string `json:"identityId" binding:"required"`
+		Name       string `json:"guestName" binding:"required"`
+		Phone      string `json:"guestPhone" binding:"required"`
+		RoomTypeId uint   `json:"roomTypeId" binding:"required"`
+		RoomId     string `json:"roomId" binding:"required"`
+		ResideDate string `json:"resideDate" binding:"required"`
+		LeaveDate  string `json:"leaveDate" binding:"required"`
+		GuestNum   int    `json:"guestNum" binding:"required"`
+		TotalMoney int    `json:"totalMoney" binding:"required"`
 	}
 	if err := c.ShouldBindJSON(&order); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "输入无效"})

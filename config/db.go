@@ -1,10 +1,13 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"hotel-management-system/global"
+	"hotel-management-system/models"
+	"hotel-management-system/utils"
 	"log"
 	"time"
 )
@@ -36,4 +39,35 @@ func initDB() {
 	sqlDB.SetMaxOpenConns(100)          // 设置打开数据库连接的最大数量
 	sqlDB.SetConnMaxLifetime(time.Hour) // 设置连接的最大生命周期为无限制
 	global.Db = db                      // 将数据库连接赋值给全局变量
+
+	if global.Db == nil {
+		panic("数据库未初始化")
+	} else {
+		_ = global.Db.AutoMigrate(
+			&models.Role{},
+			&models.User{},
+			&models.Img{},
+			&models.RoomType{},
+			&models.Room{},
+			&models.RoomStatus{},
+			&models.Guest{},
+			&models.Reside{},
+			&models.ResideState{},
+			&models.Order{},
+			&models.Billing{},
+			&models.Menu{},
+			&models.MenuType{},
+		)
+		// 插入系统角色和管理员
+		if err := global.Db.First(&models.User{}, "login_id = ?", "admin").Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				global.Db.Create(&models.Role{RoleName: "admin"})
+				hashedPassword, err := utils.HashPassword("admin")
+				if err != nil {
+					panic(err)
+				}
+				global.Db.Create(&models.User{Name: "admin", LoginId: "admin", Password: hashedPassword, RoleId: 1})
+			}
+		}
+	}
 }

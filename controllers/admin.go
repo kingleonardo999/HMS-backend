@@ -16,39 +16,6 @@ var (
 	defaultPhotoID = uint(1) // 默认头像ID
 )
 
-func AdminRegister(c *gin.Context) {
-	// 获取注册信息
-	var registerInfo models.User
-	// 绑定 JSON 数据到结构体
-	if err := c.ShouldBindJSON(&registerInfo); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "输入无效"})
-		return
-	}
-
-	// 哈希密码
-	hashedPassword, err := utils.HashPassword(registerInfo.Password)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "服务器崩溃，请稍后再试"})
-		return
-	}
-
-	// 设置哈希后的密码
-	registerInfo.Password = hashedPassword
-
-	// 保存用户信息到数据库
-	err = global.Db.Create(&registerInfo).Error
-	if err != nil {
-		if strings.Contains(err.Error(), "Duplicate entry") && strings.Contains(err.Error(), "uni") {
-			c.JSON(http.StatusConflict, gin.H{"success": false, "message": "用户已存在"})
-			return
-		}
-		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "注册失败"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"success": true, "message": "注册成功"})
-}
-
 func AdminLogin(c *gin.Context) {
 	// 获取登录信息
 	var loginInfo struct {

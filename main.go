@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"hotel-management-system/config"
-	"hotel-management-system/models"
 	"hotel-management-system/routers"
 	"log"
 	"net/http"
@@ -17,8 +16,6 @@ import (
 func main() {
 	// 初始化配置
 	config.InitConfig()
-	// 迁移数据库表
-	models.Init()
 	r := routers.SetupRouters()
 	port := config.Config.App.Port // 获取配置文件中的端口号
 	if port == "" {
