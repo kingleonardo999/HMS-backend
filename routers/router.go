@@ -25,8 +25,8 @@ func SetupRouters() *gin.Engine {
 	// 设置路由组
 	// 用户认证相关路由
 	adminGroup := r.Group("/admin")
-	adminGroup.POST("/login", controllers.AdminLogin) // 用户登录
-	adminGroup.Use(middlewares.AuthMiddleware())      // 使用认证中间件
+	adminGroup.POST("/login", controllers.AdminLogin)                     // 用户登录
+	adminGroup.Use(middlewares.AuthMiddleware(), middlewares.AdminOnly()) // 使用认证中间件
 	{
 		adminGroup.GET("/getOne", controllers.GetAdminInfo)     // 获取用户信息
 		adminGroup.GET("/list", controllers.GetAdminList)       // 获取用户列表
@@ -37,14 +37,14 @@ func SetupRouters() *gin.Engine {
 	}
 	// 文件相关路由
 	uploadsGroup := r.Group("/uploads")
-	uploadsGroup.GET("/:filename", controllers.GetImg) // 图片下载
-	uploadsGroup.Use(middlewares.AuthMiddleware())     // 使用认证中间件
+	uploadsGroup.GET("/:filename", controllers.GetImg)                      // 图片下载
+	uploadsGroup.Use(middlewares.AuthMiddleware(), middlewares.AdminOnly()) // 使用认证中间件
 	{
 		uploadsGroup.POST("/img", controllers.UploadImg) // 图片上传
 	}
 	// 角色相关路由
 	roleGroup := r.Group("/role")
-	roleGroup.Use(middlewares.AuthMiddleware()) // 使用认证中间件
+	roleGroup.Use(middlewares.AuthMiddleware(), middlewares.AdminOnly()) // 使用认证中间件
 	{
 		roleGroup.POST("/add", controllers.AddRole)       // 添加角色
 		roleGroup.POST("/delete", controllers.DeleteRole) // 删除角色
@@ -54,7 +54,7 @@ func SetupRouters() *gin.Engine {
 	}
 	// 房型相关路由
 	roomTypeGroup := r.Group("/roomType")
-	roomTypeGroup.Use(middlewares.AuthMiddleware()) // 使用认证中间件
+	roomTypeGroup.Use(middlewares.AuthMiddleware(), middlewares.AdminOnly()) // 使用认证中间件
 	{
 		roomTypeGroup.GET("/list", controllers.GetRoomTypeList)     // 获取房型列表
 		roomTypeGroup.POST("/add", controllers.AddRoomType)         // 添加房型
@@ -64,7 +64,7 @@ func SetupRouters() *gin.Engine {
 	}
 	// 房间相关路由
 	roomGroup := r.Group("/room")
-	roomGroup.Use(middlewares.AuthMiddleware()) // 使用认证中间件
+	roomGroup.Use(middlewares.AuthMiddleware(), middlewares.AdminOnly()) // 使用认证中间件
 	{
 		roomGroup.GET("/list", controllers.GetRoomList)             // 获取房间列表
 		roomGroup.POST("/add", controllers.AddRoom)                 // 添加房间
@@ -75,7 +75,7 @@ func SetupRouters() *gin.Engine {
 	}
 	// 客户相关路由
 	guestGroup := r.Group("/guestRecord")
-	guestGroup.Use(middlewares.AuthMiddleware()) // 使用认证中间件
+	guestGroup.Use(middlewares.AuthMiddleware(), middlewares.AdminOnly()) // 使用认证中间件
 	{
 		guestGroup.GET("/list", controllers.GetGuestList)             // 获取入住信息列表
 		guestGroup.POST("/add", controllers.AddGuest)                 // 添加入住信息
@@ -88,7 +88,7 @@ func SetupRouters() *gin.Engine {
 	}
 	// 订单相关路由
 	orderGroup := r.Group("/order")
-	orderGroup.Use(middlewares.AuthMiddleware()) // 使用认证中间件
+	orderGroup.Use(middlewares.AuthMiddleware(), middlewares.AdminOnly()) // 使用认证中间件
 	{
 		orderGroup.GET("/list", controllers.GetOrderList)     // 获取订单列表
 		orderGroup.POST("/add", controllers.AddOrder)         // 添加订单
@@ -105,7 +105,7 @@ func SetupRouters() *gin.Engine {
 	}
 	// 菜单相关路由
 	menuGroup := r.Group("/menu")
-	menuGroup.Use(middlewares.AuthMiddleware()) // 使用认证中间件
+	menuGroup.Use(middlewares.AuthMiddleware(), middlewares.AdminOnly()) // 使用认证中间件
 	{
 		menuGroup.GET("/list", controllers.GetMenuList)         // 获取菜单列表
 		menuGroup.POST("/add", controllers.AddMenu)             // 添加菜单
@@ -116,13 +116,21 @@ func SetupRouters() *gin.Engine {
 	}
 	// 字典相关路由x
 	dictGroup := r.Group("/dict")
-	dictGroup.Use(middlewares.AuthMiddleware()) // 使用认证中间件
+	dictGroup.Use(middlewares.AuthMiddleware(), middlewares.AdminOnly()) // 使用认证中间件
 	{
 		dictGroup.GET("/list", controllers.GetDictList)            // 获取字典列表
 		dictGroup.GET("/:dictType", controllers.GetDictByType)     // 获取字典
 		dictGroup.POST("/add:dictType", controllers.AddDict)       // 添加字典
 		dictGroup.POST("/update:dictType", controllers.UpdateDict) // 更新字典信息
 		dictGroup.POST("/delete:dictType", controllers.DeleteDict) // 删除字典
+	}
+	// 消息相关路由
+	messageGroup := r.Group("/message")
+	messageGroup.Use(middlewares.AuthMiddleware()) // 使用认证中间件
+	{
+		messageGroup.GET("/list", controllers.GetMessageList)                      // 获取消息列表
+		messageGroup.POST("/add", middlewares.AdminOnly(), controllers.AddMessage) // 添加消息
+		messageGroup.POST("/delete", controllers.DeleteMessage)                    // 删除消息
 	}
 	return r
 }

@@ -57,6 +57,8 @@ func initDB() {
 			&models.Billing{},
 			&models.Menu{},
 			&models.MenuType{},
+			&models.Message{},
+			&models.UserMessage{},
 		)
 		// 插入系统角色和管理员
 		if err := global.Db.First(&models.User{}, "login_id = ?", "admin").Error; err != nil {

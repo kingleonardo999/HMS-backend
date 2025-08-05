@@ -13,13 +13,6 @@ import (
 	"time"
 )
 
-const (
-	roomFree     = 1
-	roomOccupied = 2
-	roomOrdered  = 5
-	resideState  = "未结账"
-)
-
 func GetGuestList(c *gin.Context) {
 	// 分页查询
 	pageIndex, err1 := strconv.Atoi(c.DefaultQuery("pageIndex", "1"))

@@ -462,6 +462,34 @@ GET /billing/list
 
 GET /billing/top3
 
+## 信息
+
+### 获取系统信息
+
+GET /message/list
+
+### 添加信息
+
+POST /message/add
+
+```json
+{
+    "loginId": "admin",
+    "title": "标题",
+    "content": "内容"
+}
+```
+
+### 删除信息
+
+POST /message/delete
+
+```json
+{
+    "id": 1
+}
+```
+
 ## 文件上传和下载
 
 ### 上传图片
