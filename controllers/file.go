@@ -26,6 +26,12 @@ func UploadImg(c *gin.Context) {
 		return
 	}
 
+	// 检查文件大小
+	if file.Size > 1*1024*1024 { // 1MB
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "文件大小不能超过 1MB"})
+		return
+	}
+
 	// 检查文件类型
 	if file.Header.Get("Content-Type") != "image/jpeg" && file.Header.Get("Content-Type") != "image/png" {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "只允许上传 JPEG 或 PNG 格式的图片"})
