@@ -71,5 +71,28 @@ func initDB() {
 				global.Db.Create(&models.User{Name: "admin", LoginId: "admin", Password: hashedPassword, RoleId: 1})
 			}
 		}
+		// 插入默认头像
+		const defaultPhoto = "https://imgs.161517.xyz/2025/05/10/default-photo.jpg"
+		if err := global.Db.First(&models.Img{}, "url = ?", defaultPhoto).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				global.Db.Create(&models.Img{Url: defaultPhoto})
+			}
+		}
+		// 插入房间状态字典
+		if err := global.Db.First(&models.RoomStatus{}, "status_name = ?", "空闲").Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				global.Db.Create(&models.RoomStatus{StatusName: "空闲"})
+			}
+		}
+		if err := global.Db.First(&models.RoomStatus{}, "status_name = ?", "已入住").Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				global.Db.Create(&models.RoomStatus{StatusName: "已入住"})
+			}
+		}
+		if err := global.Db.First(&models.RoomStatus{}, "status_name = ?", "已预定").Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				global.Db.Create(&models.RoomStatus{StatusName: "已预定"})
+			}
+		}
 	}
 }

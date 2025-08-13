@@ -6,4 +6,6 @@ uploads/
 
 config/config.yml
 
+Dockerfile
+
 *.exe

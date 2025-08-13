@@ -12,10 +12,6 @@ import (
 	"strings"
 )
 
-var (
-	defaultPhotoID = uint(1) // 默认头像ID
-)
-
 func AdminLogin(c *gin.Context) {
 	// 获取登录信息
 	var loginInfo struct {

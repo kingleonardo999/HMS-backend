@@ -131,6 +131,10 @@ func DeleteDict(c *gin.Context) {
 	}
 	switch dictType {
 	case "room_status":
+		if req.ID <= 3 {
+			c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "系统字段无法删除"})
+			return
+		}
 		if err := global.Db.Delete(&models.RoomStatus{}, req.ID).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "删除失败"})
 			return
@@ -175,6 +179,10 @@ func UpdateDict(c *gin.Context) {
 	}
 	switch dictType {
 	case "room_status":
+		if req.ID <= 3 {
+			c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "系统字段无法更改"})
+			return
+		}
 		if err := global.Db.Model(&models.RoomStatus{}).Where("id = ?", req.ID).Update("status_name", req.Name).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "更新失败"})
 			return
