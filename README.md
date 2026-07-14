@@ -57,14 +57,25 @@ cd hotel-management-system
 编辑`config/config.yml`文件，填入正确的数据库连接信息和应用端口：
 ```yaml
 app:
-  port: "8080"  # 应用运行端口
-  name: "hotel-management-system"
+  port: "5000"
+  name: "hotel_management_system"
 database:
   host: "localhost"
   port: "3306"
   username: "root"
   password: "your_password"
-  dbname: "hotel_db"
+  dbname: "hms"
+```
+
+### 数据库初始化
+
+项目使用 **GORM AutoMigrate** 自动建表，首次启动时无需手动创建表结构。
+
+**自动初始化：** 启动项目后，GORM 会自动检测并创建所有表（`config/db.go:46-62`），并插入默认数据（管理员账号、角色字典等）。
+
+**手动初始化（可选）：** 如需手动建表，可执行以下脚本：
+```bash
+mysql -u root -p < sql/init.sql
 ```
 
 ### 安装依赖
@@ -79,7 +90,7 @@ go run main.go
 或构建后运行：
 ```bash
 go build
-./hotel-management-system
+./main.exe
 ```
 
 ### API访问
